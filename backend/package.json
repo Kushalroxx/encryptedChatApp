@@ -1,0 +1,40 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon dist/src/index.js",
+    "start": "node dist/src/index.js",
+    "build": "tsc -b"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@prisma/client": "^6.15.0",
+    "@types/axios": "^0.9.36",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/dotenv": "^6.1.1",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/passport": "^1.0.17",
+    "@types/passport-google-oauth2": "^0.1.10",
+    "@types/passport-google-oauth20": "^2.0.16",
+    "@types/ws": "^8.18.1",
+    "axios": "^1.11.0",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemon": "^3.1.10",
+    "passport-google-oauth2": "^0.2.0",
+    "passport-google-oauth20": "^2.0.0",
+    "redis": "^5.8.2",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "passport": "^0.7.0",
+    "prisma": "^6.15.0"
+  }
+}
