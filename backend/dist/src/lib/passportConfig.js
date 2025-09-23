@@ -21,7 +21,7 @@ const GoogleStrategy = passport_google_oauth20_1.default.Strategy;
 passport_1.default.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID || "",
     clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-    callbackURL: `http://${process.env.HOST_URL}/api/auth/callback/google`,
+    callbackURL: `${process.env.HOST_URL}/api/auth/callback/google`,
     state: true,
     store: oAuthStateStore_1.default,
     passReqToCallback: true

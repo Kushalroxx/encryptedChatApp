@@ -11,7 +11,7 @@ export function googleLoginController(req:Request, res:Response) {
       },
       process.env.JWT_ACCESS_SECRET||"your secret access key",
       {
-        expiresIn: "1d"
+        expiresIn: "15m"
       }
     );
     const refreshToken = jwt.sign(
@@ -44,9 +44,11 @@ export function googleLoginController(req:Request, res:Response) {
       secure: process.env.ENV === "production",
       domain: process.env.DOMAIN
     }); 
-    res.redirect(process.env.CLIENT_URL!) 
+    res.redirect(process.env.CLIENT_URL!)
+    return 
     } catch (error) {
      res.status(500).json({
-        message:"something went wrong", success:false, error}) 
+        message:"something went wrong", success:false, error})
+        return 
     }
   }
