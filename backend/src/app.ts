@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import { googleLoginController } from "./controller/googleLogin.controller";
 import { WebSocketServer } from "ws";
 import { wsMiddleware } from "./middleware/ws.middleware";
+import { WebSocketType } from "./types/webSocket";
 
 const app = express();
 
@@ -25,7 +26,7 @@ app.get("/", (req, res) => {
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
 wss.on("connection", (ws,req) => {
-  wsMiddleware(ws,req);
+  wsMiddleware(wss, ws as WebSocketType,req);
     console.log("Client connected");
     ws.on("message", (message) => {
         console.log(`Received message => ${message}`);
