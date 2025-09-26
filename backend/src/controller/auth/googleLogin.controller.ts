@@ -1,13 +1,18 @@
 import { Request, Response } from "express";
-import prisma from "../../prisma";
+import prisma from "../../../prisma";
 import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt"
 
-export function googleLoginController(req:Request, res:Response) {
-    const accessToken = jwt.sign(
+export async function googleLoginController(req:Request, res:Response) {
+  if (!req.user) {
+    res.status(500).json({message:"something went wrong",success:false})
+    return
+  }  
+  const accessToken = jwt.sign(
       {
-        id: req.user?.id ,
-        email: req.user?.email,
-        name: req.user?.name,
+        id: req.user.id ,
+        email: req.user.email,
+        name: req.user.name,
       },
       process.env.JWT_ACCESS_SECRET||"your secret access key",
       {
@@ -16,22 +21,23 @@ export function googleLoginController(req:Request, res:Response) {
     );
     const refreshToken = jwt.sign(
       {
-        id: req.user?.id ,
-        email: req.user?.email,
-        name: req.user?.name,
+        id: req.user.id ,
+        email: req.user.email,
+        name: req.user.name,
       },
       process.env.JWT_REFRESH_SECRET||"your secret refresh key",
       {
         expiresIn: "30d"
       }
     )
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10)
     try {
       prisma.user.update({
         where: {
-          id: req.user?.id
+          id: req.user.id
         },
         data: {
-          refreshToken
+          refreshToken: hashedRefreshToken
         }
       })
     res.cookie("accessToken", accessToken, {

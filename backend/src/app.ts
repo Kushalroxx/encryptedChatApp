@@ -3,10 +3,13 @@ import passport from "passport";
 import { createServer } from "http";
 import "./lib/passportConfig";
 import cookieParser from "cookie-parser";
-import { googleLoginController } from "./controller/googleLogin.controller";
+import { googleLoginController } from "./controller/auth/googleLogin.controller";
 import { WebSocketServer } from "ws";
-import { wsMiddleware } from "./middleware/ws.middleware";
+import { wsAuthMiddleware } from "./middleware/wsAuth.middleware";
 import { WebSocketType } from "./types/webSocket";
+import { wsMessageMiddleware } from "./middleware/wsMessage.middleware";
+import { logoutController } from "./controller/auth/logout.controller";
+import { refreshController } from "./controller/auth/refresh.controller";
 
 const app = express();
 
@@ -19,18 +22,16 @@ app.get('/api/auth/google',
 
 app.get('/api/auth/callback/google', 
   passport.authenticate('google', { session: false, failureRedirect: `${process.env.CLIENT_URL}/login` }),googleLoginController);
+app.get("/api/auth/logout", logoutController);
+app.get("/api/refresh", refreshController);
 app.get("/", (req, res) => {
     res.send("Hello World!");
 });
 
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
-wss.on("connection", (ws,req) => {
-  wsMiddleware(wss, ws as WebSocketType,req);
-    console.log("Client connected");
-    ws.on("message", (message) => {
-        console.log(`Received message => ${message}`);
-    });
-    ws.send("Hello! Message From Server!!");
+wss.on("connection", async(ws,req) => {
+  await wsAuthMiddleware(wss, ws as WebSocketType,req);
+   await wsMessageMiddleware(wss, ws as WebSocketType);
 });
 export default server;

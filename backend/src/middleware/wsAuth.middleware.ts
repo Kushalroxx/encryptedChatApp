@@ -3,8 +3,9 @@ import jwt from "jsonwebtoken";
 import { WebSocketType } from "../types/webSocket";
 import { TimerStore } from "../lib/timerStore";
 import WebSocket from "ws";
+import { RedisStore } from "../lib/redisStore";
 
-export const wsMiddleware = (wss:WebSocket.Server<typeof WebSocket, typeof IncomingMessage>,ws:WebSocketType,req:IncomingMessage)=>{
+export const wsAuthMiddleware = async(wss:WebSocket.Server<typeof WebSocket, typeof IncomingMessage>,ws:WebSocketType,req:IncomingMessage)=>{
 
     const cookies = req.headers.cookie;
     if (!cookies) {
@@ -26,9 +27,11 @@ export const wsMiddleware = (wss:WebSocket.Server<typeof WebSocket, typeof Incom
             ws.close(1008, "Authentication timeout");
         }, 15 * 60 * 1000);
         TimerStore.setTimer(ws.user.id, timer);
+        await RedisStore.setActiveUser(ws.user.id);
         
-        ws.on("close", () => {
+        ws.on("close", async() => {
             TimerStore.clearTimer(ws.user.id);
+            await RedisStore.removeActiveUser(ws.user.id);
         });
         return;
     } catch (error) {
